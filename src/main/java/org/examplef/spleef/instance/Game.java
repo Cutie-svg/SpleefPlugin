@@ -14,6 +14,7 @@ public class Game {
         this.arena = arena;
     }
     public void start() {
+        spleef.getArenaManager().loadArenas();
         arena.setState(GameState.LIVE);
         arena.sendMessage(ChatColor.AQUA + "GAME HAS STARTED!");
     }

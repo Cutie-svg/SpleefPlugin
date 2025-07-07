@@ -1,7 +1,9 @@
 package org.examplef.spleef.manager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.examplef.spleef.Spleef;
@@ -34,6 +36,22 @@ public class ArenaManager {
                     config.getDouble("arenas." + str + ".z"),
                     (float) config.getDouble("arenas." + str + ".yaw"),
                     (float) config.getDouble("arenas." + str + ".pitch"))));
+        }
+    }
+
+    public void reload() {
+        spleef.reloadConfig();
+        loadArenas();
+
+        for (Arena arena : spleef.getArenaManager().getArenas()) {
+            World world = arena.getWorld();
+
+            if (world != null) {
+                world.setDifficulty(Difficulty.PEACEFUL);
+                world.setSpawnFlags(false, false);
+                world.setStorm(false);
+                world.setThundering(false);
+            }
         }
     }
 

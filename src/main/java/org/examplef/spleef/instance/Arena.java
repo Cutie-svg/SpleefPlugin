@@ -3,6 +3,7 @@ package org.examplef.spleef.instance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
@@ -107,4 +108,5 @@ public class Arena {
     public int getId() { return id; }
     public void setState(GameState state) { this.state = state; }
     public GameState getState() { return state; }
+    public World getWorld() { return spawn.getWorld(); }
 }

@@ -1,14 +1,11 @@
 package org.examplef.spleef.listeners;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
 import org.examplef.spleef.manager.ConfigManager;
-
-import java.util.UUID;
 
 public class ConnectListener implements Listener {
 

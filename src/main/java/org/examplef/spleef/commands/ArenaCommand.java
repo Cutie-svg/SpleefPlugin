@@ -63,6 +63,10 @@ public class ArenaCommand implements CommandExecutor {
             } else {
                 player.sendMessage(ChatColor.BOLD + "Invalid arena id.");
             }
+        } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+            if (sender.hasPermission("spleef.reload")) {
+                spleef.getArenaManager().reload();
+            }
         }
         return true;
     }
