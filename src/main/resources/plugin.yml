@@ -1,0 +1,6 @@
+name: Spleef
+version: '1.0-SNAPSHOT'
+main: org.examplef.spleef.Spleef
+api-version: '1.21'
+commands:
+  arena:
