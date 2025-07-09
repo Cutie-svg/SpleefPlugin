@@ -4,3 +4,4 @@ main: org.examplef.spleef.Spleef
 api-version: '1.21'
 commands:
   arena:
+  areload:
