@@ -2,10 +2,12 @@ package org.examplef.spleef.instance;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
 
@@ -21,9 +23,10 @@ public class Game implements Listener {
         Bukkit.getPluginManager().registerEvents(this, spleef);
     }
     public void start() {
-        spleef.getArenaManager().loadArenas();
         arena.setState(GameState.LIVE);
         arena.sendMessage(ChatColor.AQUA + "GAME HAS STARTED!");
+
+        ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL, 1);
     }
     @EventHandler
     public void onMove(PlayerMoveEvent e) {

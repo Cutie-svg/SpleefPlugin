@@ -1,10 +1,8 @@
 package org.examplef.spleef.instance;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.manager.ConfigManager;
@@ -32,9 +30,11 @@ public class Arena {
 
         this.id = id;
         this.spawn = spawn;
+        this.state = GameState.RECRUITING;
 
         players = new ArrayList<>();
         alivePlayers = new ArrayList<>();
+        countdown = new CountDown(spleef, this);
     }
 
     /* GAME */
@@ -67,7 +67,7 @@ public class Arena {
         sendTitle("", "");
 
         state = GameState.RECRUITING;
-        countdown = new CountDown(spleef, this);
+
     }
 
     public void end() {
@@ -103,9 +103,17 @@ public class Arena {
 
         player.teleport(spawn);
 
+        player.getInventory().clear();
+
+        ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL, 1);
+        player.getInventory().addItem(shovel);
+
+
+
         if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
             setState(GameState.COUNTDOWN);
             countdown.start();
+
         }
     }
 

@@ -21,6 +21,7 @@ public final class Spleef extends JavaPlugin {
     public void onEnable() {
         ConfigManager.setConfig(this);
         arenaManager = new ArenaManager(this);
+        arenaManager.loadArenas();
 
         Bukkit.getPluginManager().registerEvents(new ConnectListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GameListener(this), this);

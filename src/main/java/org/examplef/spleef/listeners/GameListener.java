@@ -23,17 +23,23 @@ public class GameListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
+        Player player = e.getPlayer();
+
         Material block = e.getBlock().getType();
-        Arena arena = spleef.getArenaManager().getArena(e.getPlayer());
+        Arena arena = spleef.getArenaManager().getArena(player);
+
 
         if (arena != null && arena.getState().equals(GameState.LIVE)) {
+
             if (block == Material.SNOW_BLOCK) {
                 ItemStack snow = new ItemStack(Material.SNOWBALL, 4);
-                e.getPlayer().getInventory().addItem(snow);
+                player.getInventory().addItem(snow);
+                player.updateInventory();
+
             }
             if (block != Material.SNOW_BLOCK) {
                 e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.RED + "You cannot break this block.");
+                player.sendMessage(ChatColor.RED + "You cannot break this block.");
             }
         }
     }

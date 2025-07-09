@@ -1,12 +1,10 @@
 package org.examplef.spleef.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
@@ -35,7 +33,7 @@ public class ArenaCommand implements CommandExecutor {
                 } else {
                     player.sendMessage(ChatColor.RED + "You are not in an arena.");
                 }
-            } else if (args.length == 1 && args[0].equalsIgnoreCase("join")) {
+            } else if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
                 if (spleef.getArenaManager().getArena(player) != null) {
                     player.sendMessage(ChatColor.RED + "You are already playing in an arena!");
                     return false;
@@ -51,8 +49,6 @@ public class ArenaCommand implements CommandExecutor {
                     Arena arena = spleef.getArenaManager().getArena(id);
                     if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
                         arena.addPlayer(player);
-                        ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL, 1);
-                        player.getInventory().addItem(shovel);
                     } else {
                         player.sendMessage("Cannot join arena right now");
                     }
