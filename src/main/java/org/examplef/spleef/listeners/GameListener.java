@@ -2,10 +2,11 @@ package org.examplef.spleef.listeners;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
@@ -15,7 +16,10 @@ public class GameListener implements Listener {
 
     private final Spleef spleef;
 
-    public GameListener(Spleef spleef) { this.spleef = spleef; }
+    public GameListener(Spleef spleef) {
+        this.spleef = spleef;
+
+    }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
@@ -33,4 +37,5 @@ public class GameListener implements Listener {
             }
         }
     }
+
 }

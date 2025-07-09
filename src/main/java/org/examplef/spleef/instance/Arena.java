@@ -21,6 +21,7 @@ public class Arena {
     private Location spawn;
 
     private List<UUID> players;
+    private List<Player> alivePlayers;
 
     private Game game;
     private GameState state;
@@ -33,13 +34,25 @@ public class Arena {
         this.spawn = spawn;
 
         players = new ArrayList<>();
+        alivePlayers = new ArrayList<>();
     }
 
     /* GAME */
 
     public void start() {
         game = new Game(spleef, this);
+
+        alivePlayers.clear();
+
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                alivePlayers.add(player);
+            }
+        }
+
         game.start();
+
     }
 
     public void reset() {
@@ -57,6 +70,17 @@ public class Arena {
         countdown = new CountDown(spleef, this);
     }
 
+    public void end() {
+        if (alivePlayers.size() == 1) {
+            Player winner = alivePlayers.get(0);
+            sendMessage(ChatColor.AQUA + "The game has ended! The winner was " + winner.getName());
+            reset();
+            setState(GameState.RECRUITING);
+        } else if (alivePlayers.size() == 0) {
+            sendMessage(ChatColor.GREEN + "NO winners this round.");
+        }
+    }
+
     /* TOOLS */
 
     public void sendMessage(String message) {
@@ -70,6 +94,7 @@ public class Arena {
             Bukkit.getPlayer(uuid).sendTitle(title, subtitle);
         }
     }
+
 
     /* PLAYER MANAGEMENT */
 
@@ -102,6 +127,16 @@ public class Arena {
         }
     }
 
+    public void eliminatePlayer(Player player) {
+        if (alivePlayers.contains(player)) {
+            alivePlayers.remove(player);
+            player.sendMessage(ChatColor.RED + "You fell!");
+            player.teleport(ConfigManager.getLobbySpawn());
+
+            end();
+        }
+    }
+
     /* GETTERS AND SETTERS */
 
     public List<UUID> getPlayers() { return players; }
@@ -109,4 +144,8 @@ public class Arena {
     public void setState(GameState state) { this.state = state; }
     public GameState getState() { return state; }
     public World getWorld() { return spawn.getWorld(); }
+    public List<Player> getAlivePlayers() { return alivePlayers; }
+    /* EVENTS */
+
+
 }

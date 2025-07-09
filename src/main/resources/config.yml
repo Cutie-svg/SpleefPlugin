@@ -9,9 +9,9 @@ lobby-spawn:
   pitch: 13.334157
 arenas:
   0:
-    world: 'arena'
-    x: -2.690495
-    y: -60.0000
-    z: 1.791400
-    yaw: -86.568726
+    world: 'spleef'
+    x: 113.596576
+    y: 293.0000
+    z: 101.281536
+    yaw: -177.36638
     pitch: 13.334157
