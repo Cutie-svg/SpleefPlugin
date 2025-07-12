@@ -1,5 +1,5 @@
 required-players: 1
-countdown-seconds: 30
+countdown-seconds: 10
 lobby-spawn:
   world: 'world'
   x: -56.075000
@@ -9,9 +9,9 @@ lobby-spawn:
   pitch: 13.334157
 arenas:
   0:
-    world: 'spleef'
-    x: 113.596576
-    y: 293.0000
+    world: 'spleef_arena'
+    x: 4.772847
+    y: 56.0000
     z: 101.281536
-    yaw: -177.36638
-    pitch: 13.334157
+    yaw: 16.461136
+    pitch: 8.764987
