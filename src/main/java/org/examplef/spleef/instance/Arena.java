@@ -2,6 +2,7 @@ package org.examplef.spleef.instance;
 
 import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import com.infernalsuite.asp.api.loaders.SlimeLoader;
+import com.infernalsuite.asp.api.world.SlimeWorldInstance;
 import com.infernalsuite.asp.api.world.properties.SlimeProperties;
 import com.infernalsuite.asp.api.world.properties.SlimePropertyMap;
 import com.infernalsuite.asp.loaders.file.FileLoader;
@@ -43,18 +44,13 @@ public class Arena {
 
         players = new ArrayList<>();
         alivePlayers = new ArrayList<>();
-        countdown = new CountDown(spleef, this);
 
         api = AdvancedSlimePaperAPI.instance();
     }
 
-    /* GAME */
-
     public void start() {
         game = new Game(spleef, this);
-
         alivePlayers.clear();
-
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
@@ -62,33 +58,39 @@ public class Arena {
             }
         }
         game.start();
-
     }
 
     public void reset() {
         if (state == GameState.LIVE) {
             Location loc = ConfigManager.getLobbySpawn();
-            for (UUID uuid : players) {
+            List<UUID> currentPlayers = new ArrayList<>(players);
+            for (UUID uuid : currentPlayers) {
                 Player player = Bukkit.getPlayer(uuid);
-                player.teleport(loc);
+                if (player != null) {
+                    player.teleport(loc);
+                }
             }
+        }
+        if (countdown != null) {
+            countdown.cancel();
         }
         players.clear();
         alivePlayers.clear();
         sendTitle("", "");
-
         state = GameState.RECRUITING;
-
     }
 
     public void end() {
         if (alivePlayers.size() == 1) {
             Player winner = alivePlayers.get(0);
             sendMessage(ChatColor.AQUA + "The game has ended! The winner was " + winner.getName());
+            countdown.setCountdownSeconds(0);
             reset();
             resetArena();
             setState(GameState.RECRUITING);
         } else if (alivePlayers.size() == 0) {
+            setState(GameState.RECRUITING);
+            countdown.setCountdownSeconds(0);
             sendMessage(ChatColor.GREEN + "NO winners this round.");
             resetArena();
         }
@@ -96,19 +98,14 @@ public class Arena {
 
     public void resetArena() {
         World arenaWorld = Bukkit.getWorld("spleef_arena");
-
-        for (UUID uuid : players) {
-
-            Player player = Bukkit.getPlayer(uuid);
-            player.teleport(spawn);
+        if (arenaWorld != null) {
+            Bukkit.unloadWorld(arenaWorld, false);
         }
-        Bukkit.unloadWorld(arenaWorld, false);
 
-        File file = new File(spleef.getDataFolder(), "slime_worlds");
+        File file = new File("C:/Users/HP/Desktop/Server/slime_worlds");
         SlimeLoader loader = new FileLoader(file);
 
         SlimePropertyMap properties = new SlimePropertyMap();
-
         properties.setValue(SlimeProperties.DIFFICULTY, "peaceful");
         properties.setValue(SlimeProperties.ENVIRONMENT, "normal");
         properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
@@ -124,33 +121,42 @@ public class Arena {
         }).thenAcceptAsync(slimeWorld -> {
             if (slimeWorld == null) return;
 
-            Bukkit.getScheduler().runTask(spleef, () ->{
+            Bukkit.getScheduler().runTask(spleef, () -> {
                 try {
-                    api.loadWorld(slimeWorld, true);
+                    SlimeWorldInstance slimeWorldInstance = api.loadWorld(slimeWorld, true);
+                    World newWorld = slimeWorldInstance.getBukkitWorld();
+                    spawn = new Location(newWorld, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
+
+                    for (UUID uuid : players) {
+                        Player player = Bukkit.getPlayer(uuid);
+                        if (player != null) {
+                            player.teleport(spawn);
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
-
         });
     }
 
-    /* TOOLS */
-
     public void sendMessage(String message) {
         for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).sendMessage(message);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                player.sendMessage(message);
+            }
         }
     }
 
     public void sendTitle(String title, String subtitle) {
         for (UUID uuid : players) {
-            Bukkit.getPlayer(uuid).sendTitle(title, subtitle);
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) {
+                player.sendTitle(title, subtitle);
+            }
         }
     }
-
-
-    /* PLAYER MANAGEMENT */
 
     public void addPlayer(Player player) {
         if (players.contains(player.getUniqueId())) {
@@ -160,6 +166,7 @@ public class Arena {
 
         players.add(player.getUniqueId());
         player.teleport(spawn);
+        player.sendMessage(spawn.getWorld().getName());
         player.getInventory().clear();
 
         ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL, 1);
@@ -167,24 +174,32 @@ public class Arena {
 
         if (state.equals(GameState.RECRUITING) && players.size() >= ConfigManager.getRequiredPlayers()) {
             setState(GameState.COUNTDOWN);
+            player.setGameMode(GameMode.SURVIVAL);
+
+            if (countdown != null) {
+                countdown.cancel();
+            }
+            countdown = new CountDown(spleef, this);
             countdown.start();
         }
     }
 
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
-
+        alivePlayers.remove(player);
         player.teleport(ConfigManager.getLobbySpawn());
         player.sendTitle("", "");
 
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "Not enough players to start");
+            countdown.cancel();
             reset();
             return;
         }
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.AQUA + "The game has ended as too many players have left the game.");
+            countdown.cancel();
             reset();
         }
     }
@@ -192,14 +207,12 @@ public class Arena {
     public void eliminatePlayer(Player player) {
         if (alivePlayers.contains(player)) {
             alivePlayers.remove(player);
+            players.remove(player.getUniqueId());
             player.sendMessage(ChatColor.RED + "You fell!");
             player.teleport(ConfigManager.getLobbySpawn());
-
             end();
         }
     }
-
-    /* GETTERS AND SETTERS */
 
     public List<UUID> getPlayers() { return players; }
     public int getId() { return id; }
@@ -207,6 +220,4 @@ public class Arena {
     public GameState getState() { return state; }
     public World getWorld() { return spawn.getWorld(); }
     public List<Player> getAlivePlayers() { return alivePlayers; }
-
-
 }

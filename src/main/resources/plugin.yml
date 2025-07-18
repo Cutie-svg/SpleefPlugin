@@ -6,3 +6,4 @@ commands:
   arena:
   areload:
   save:
+softdepend: [ASPaperPlugin]
