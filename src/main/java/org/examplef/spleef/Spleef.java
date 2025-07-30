@@ -11,8 +11,8 @@ import org.examplef.spleef.listeners.GameListener;
 import org.examplef.spleef.listeners.ServerLoadListener;
 import org.examplef.spleef.manager.ArenaManager;
 import org.examplef.spleef.manager.ConfigManager;
-import org.examplef.spleef.manager.MongoManager;
-import org.examplef.spleef.manager.PlayerManager;
+import org.examplef.spleef.manager.database.MongoManager;
+import org.examplef.spleef.manager.database.PlayerManager;
 
 public final class Spleef extends JavaPlugin {
 

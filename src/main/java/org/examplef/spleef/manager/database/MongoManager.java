@@ -1,4 +1,4 @@
-package org.examplef.spleef.manager;
+package org.examplef.spleef.manager.database;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
