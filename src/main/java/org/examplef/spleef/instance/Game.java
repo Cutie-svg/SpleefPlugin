@@ -1,7 +1,5 @@
 package org.examplef.spleef.instance;
 
-import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
-import com.infernalsuite.asp.api.world.SlimeWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
