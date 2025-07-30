@@ -1,11 +1,16 @@
 package org.examplef.spleef.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
@@ -31,7 +36,7 @@ public class GameListener implements Listener {
 
         if (arena == null) return;
 
-        if (arena.getState() == GameState.COUNTDOWN) {
+        if (arena.getState() == GameState.COUNTDOWN || arena.getState() == GameState.RECRUITING) {
             e.setCancelled(true);
             player.sendMessage(ChatColor.RED + "Wait for the game to start!");
             return;
@@ -46,6 +51,21 @@ public class GameListener implements Listener {
                 e.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You cannot break this block.");
             }
+        }
+    }
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent e) {
+        Projectile projectile = e.getEntity();
+
+        if (!(projectile instanceof Snowball)) return;
+
+        Block hitBlock = e.getHitBlock();
+        if (hitBlock == null) return;
+
+        if (hitBlock.getType() == Material.SNOW_BLOCK) {
+            Bukkit.getScheduler().runTaskLater(spleef, () -> {
+                hitBlock.breakNaturally();
+            }, 1L);
         }
     }
 }

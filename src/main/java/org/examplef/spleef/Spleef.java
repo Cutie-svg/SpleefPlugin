@@ -39,11 +39,12 @@ public final class Spleef extends JavaPlugin {
         getCommand("areload").setExecutor(new ReloadCommand(this));
         getCommand("terminate").setExecutor(new Terminate(this));
     }
+
     @Override
     public void onDisable() {
         mongoManager.disconnect();
-    }
 
-    public ArenaManager getArenaManager() { return arenaManager; }
-    public PlayerManager getPlayerManager() { return playerManager; }
+    }
+    public ArenaManager getArenaManager() { return arenaManager;}
+    public PlayerManager getPlayerManager() {return playerManager; }
 }
