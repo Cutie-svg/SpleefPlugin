@@ -1,18 +1,18 @@
 package org.examplef.spleef.instance;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.manager.ConfigManager;
 
-
 public class CountDown extends BukkitRunnable {
 
-    private Spleef spleef;
+    private final Spleef spleef;
     private Arena arena;
 
-    private int countdownSeconds;
+    private int countdownSeconds;;
 
     public CountDown(Spleef spleef, Arena arena) {
         this.spleef = spleef;
@@ -38,9 +38,9 @@ public class CountDown extends BukkitRunnable {
         }
         arena.sendTitle(ChatColor.GREEN.toString() + countdownSeconds + " second" + (countdownSeconds == 1 ? "" : "s"), ChatColor.GRAY + "until game starts");
         countdownSeconds--;
+
     }
-    public void setCountdownSeconds(int seconds) {
-        spleef.getConfig().set("countdown-seconds", seconds);
-    }
+    public void setCountdownSeconds(int seconds) { spleef.getConfig().set("countdown-seconds", seconds); }
+
 }
 

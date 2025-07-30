@@ -5,5 +5,7 @@ api-version: '1.21'
 commands:
   arena:
   areload:
-  save:
+  terminate:
+    permission: spleef.forcestop
+    permission-message: §cYou cannot use this.
 softdepend: [ASPaperPlugin]

@@ -1,4 +1,4 @@
-package org.examplef.spleef.commands;
+package org.examplef.spleef.commands.user;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -46,6 +46,7 @@ public class ArenaCommand implements CommandExecutor {
                 return false;
             }
 
+
             int id;
             try {
                 id = Integer.parseInt(args[1]);
@@ -54,7 +55,7 @@ public class ArenaCommand implements CommandExecutor {
                 return false;
             }
 
-            if (id < 0 || id > spleef.getArenaManager().getArenas().size()) {
+            if (id < 0 || id >= spleef.getArenaManager().getArenas().size()) {
                 player.sendMessage("Cannot join arena right now");
                 return true;
             }

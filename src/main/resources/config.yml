@@ -1,4 +1,5 @@
-required-players: 1
+required-players: 2
+maximum-players: 2
 countdown-seconds: 10
 lobby-spawn:
   world: 'world'
@@ -10,8 +11,8 @@ lobby-spawn:
 arenas:
   0:
     world: 'spleef_arena'
-    x: 8.062705
-    y: 58.0000
-    z: 38.989974
+    x: -8.305450
+    y: 72.0000
+    z: -5.458573
     yaw: 16.461136
     pitch: 8.764987

@@ -1,4 +1,4 @@
-package org.examplef.spleef.commands;
+package org.examplef.spleef.commands.user;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
