@@ -90,8 +90,6 @@ public class Arena {
             sendMessage(ChatColor.GREEN + "NO winners this round.");
         }
 
-        countdown.setCountdownSeconds(0);
-
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
@@ -106,8 +104,8 @@ public class Arena {
 
         world.setDifficulty(Difficulty.PEACEFUL);
 
-        reset();
         resetArena();
+        reset();
         setState(GameState.RECRUITING);
     }
 
@@ -115,7 +113,7 @@ public class Arena {
         World arenaWorld = Bukkit.getWorld("spleef_arena");
         if (arenaWorld != null) Bukkit.unloadWorld(arenaWorld, false);
 
-        File file = new File("slime_worlds");
+        File file = new File(Bukkit.getWorldContainer(), "slime_worlds");
         SlimeLoader loader = new FileLoader(file);
 
         SlimePropertyMap properties = new SlimePropertyMap();

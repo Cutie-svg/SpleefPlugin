@@ -40,7 +40,6 @@ public class CountDown extends BukkitRunnable {
         countdownSeconds--;
 
     }
-    public void setCountdownSeconds(int seconds) { spleef.getConfig().set("countdown-seconds", seconds); }
 
 }
 
