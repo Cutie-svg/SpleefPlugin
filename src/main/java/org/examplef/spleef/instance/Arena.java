@@ -67,6 +67,7 @@ public class Arena {
 
         setState(GameState.LIVE);
         game.start();
+
     }
 
     public void reset() {
@@ -84,7 +85,10 @@ public class Arena {
         alivePlayers.clear();
 
         sendTitle("", "");
+
+        System.out.println("Game ended");
         setState(GameState.RECRUITING);
+        System.out.println("Game state is: " + this.getState());
 
         resetArena();
     }
@@ -106,6 +110,8 @@ public class Arena {
             if (player != null) {
                 player.getInventory().clear();
                 player.teleport(lobby);
+
+                Bukkit.getLogger().info("Teleported players to lobby");
                 player.getInventory().setItem(0, SpleefUI.createCompass(player));
             }
         }
