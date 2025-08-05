@@ -11,21 +11,20 @@ import org.examplef.spleef.Spleef;
 
 public class Game implements Listener {
 
-    private Arena arena;
+    private final Arena arena;
     private final Spleef spleef;
 
     public Game(Spleef spleef, Arena arena) {
         this.spleef = spleef;
         this.arena = arena;
 
+        // Register listener only once
         Bukkit.getPluginManager().registerEvents(this, spleef);
-
     }
 
     public void start() {
-        arena.setState(GameState.LIVE);
+        // Do NOT set state here, Arena handles it
         arena.sendMessage(ChatColor.AQUA + "GAME HAS STARTED!");
-
     }
 
     @EventHandler

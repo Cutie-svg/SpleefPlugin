@@ -36,8 +36,6 @@ public class Terminate implements CommandExecutor {
             if (arena.getPlayers().contains(player.getUniqueId())) {
                 arena.sendMessage(ChatColor.YELLOW + "Match terminated by an admin.");
                 arena.end();
-                arena.reset();
-                arena.resetArena();
                 sender.sendMessage(ChatColor.GREEN + "Terminated match for player " + player.getName());
                 terminated = true;
                 break;

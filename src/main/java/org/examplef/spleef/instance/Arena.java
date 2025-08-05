@@ -48,10 +48,16 @@ public class Arena {
         state = GameState.RECRUITING;
 
         api = AdvancedSlimePaperAPI.instance();
+
+        game = new Game(spleef, this);
     }
 
     public void start() {
-        game = new Game(spleef, this);
+        if (state == GameState.LIVE) {
+            System.out.println("Arena " + id + " is already LIVE, cannot start again.");
+            return;
+        }
+
         alivePlayers.clear();
 
         for (UUID uuid : players) {
@@ -59,23 +65,28 @@ public class Arena {
             if (player != null) alivePlayers.add(player);
         }
 
+        setState(GameState.LIVE);
         game.start();
     }
 
     public void reset() {
-        Location lobby = ConfigManager.getLobbySpawn();
+        if (countdown != null) countdown.cancel();
 
+        Location lobby = ConfigManager.getLobbySpawn();
         for (UUID uuid : new ArrayList<>(players)) {
             Player player = Bukkit.getPlayer(uuid);
-            if (player != null) player.teleport(lobby);
+            if (player != null && player.isOnline()) {
+                player.teleport(lobby);
+            }
         }
-
-        if (countdown != null) countdown.cancel();
 
         players.clear();
         alivePlayers.clear();
+
         sendTitle("", "");
-        state = GameState.RECRUITING;
+        setState(GameState.RECRUITING);
+
+        resetArena();
     }
 
     public void end() {
@@ -94,19 +105,14 @@ public class Arena {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) {
                 player.getInventory().clear();
-
                 player.teleport(lobby);
-
                 player.getInventory().setItem(0, SpleefUI.createCompass(player));
             }
-
         }
 
         world.setDifficulty(Difficulty.PEACEFUL);
 
         resetArena();
-        reset();
-        setState(GameState.RECRUITING);
     }
 
     public void resetArena() {
@@ -136,12 +142,17 @@ public class Arena {
                 try {
                     SlimeWorldInstance instance = api.loadWorld(slimeWorld, true);
                     World newWorld = instance.getBukkitWorld();
+
                     spawn = new Location(newWorld, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
 
                     for (UUID uuid : players) {
                         Player player = Bukkit.getPlayer(uuid);
                         if (player != null) player.teleport(spawn);
                     }
+
+                    reset();
+                    setState(GameState.RECRUITING);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -210,33 +221,38 @@ public class Arena {
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "Not enough players to start");
             countdown.cancel();
-            reset();
+            end();
         }
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.AQUA + "The game has ended as too many players have left the game.");
             countdown.cancel();
-            reset();
+            end();
         }
     }
 
     public void eliminatePlayer(Player player) {
-        if (alivePlayers.remove(player)) {
-            players.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.RED + "You fell!");
-            player.teleport(ConfigManager.getLobbySpawn());
+        alivePlayers.remove(player);
+        players.remove(player.getUniqueId());
+        player.sendMessage(ChatColor.RED + "You fell!");
+        player.teleport(ConfigManager.getLobbySpawn());
 
-            player.getInventory().clear();
-            player.getInventory().setItem(0, SpleefUI.createCompass(player));
+        player.getInventory().clear();
+        player.getInventory().setItem(0, SpleefUI.createCompass(player));
 
-            if (alivePlayers.size() == 1) end();
+        if (alivePlayers.size() == 1) {
+            end();
         }
     }
 
-
     public List<UUID> getPlayers() { return players; }
     public int getId() { return id; }
-    public void setState(GameState state) { this.state = state; }
+
+    public void setState(GameState newState) {
+        System.out.println("Arena " + id + " state changed: " + this.state + " -> " + newState);
+        this.state = newState;
+    }
+
     public GameState getState() { return state; }
     public World getWorld() { return spawn.getWorld(); }
     public List<Player> getAlivePlayers() { return alivePlayers; }
