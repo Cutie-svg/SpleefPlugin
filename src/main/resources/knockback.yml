@@ -1,0 +1,5 @@
+enabled: true
+base-strength: 1.2
+horizontal-multiplier: 1.0
+vertical-multiplier: 0.6
+cooldown-ms: 500

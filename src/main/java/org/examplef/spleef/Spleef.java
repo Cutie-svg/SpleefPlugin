@@ -8,15 +8,19 @@ import org.examplef.spleef.commands.user.ReloadCommand;
 import org.examplef.spleef.gui.SpleefUI;
 import org.examplef.spleef.listeners.ConnectListener;
 import org.examplef.spleef.listeners.GameListener;
+import org.examplef.spleef.listeners.KnockBack;
 import org.examplef.spleef.listeners.ServerLoadListener;
 import org.examplef.spleef.manager.ArenaManager;
 import org.examplef.spleef.manager.ConfigManager;
+import org.examplef.spleef.manager.KnockBackManager;
 import org.examplef.spleef.manager.database.MongoManager;
 import org.examplef.spleef.manager.database.PlayerManager;
 
 public final class Spleef extends JavaPlugin {
 
     private ArenaManager arenaManager;
+    private KnockBackManager knockBackManager;
+
     private MongoManager mongoManager;
     private PlayerManager playerManager;
 
@@ -25,6 +29,8 @@ public final class Spleef extends JavaPlugin {
         ConfigManager.setConfig(this);
 
         arenaManager = new ArenaManager(this);
+        knockBackManager = new KnockBackManager(this);
+
         mongoManager = new MongoManager();
         playerManager = new PlayerManager(this, mongoManager);
 
@@ -34,6 +40,7 @@ public final class Spleef extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new GameListener(this), this);
         Bukkit.getPluginManager().registerEvents(new ServerLoadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpleefUI(arenaManager), this);
+        Bukkit.getPluginManager().registerEvents(new KnockBack(this), this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
         getCommand("areload").setExecutor(new ReloadCommand(this));
@@ -46,5 +53,7 @@ public final class Spleef extends JavaPlugin {
 
     }
     public ArenaManager getArenaManager() { return arenaManager;}
+    public KnockBackManager getKnockBackManager() { return knockBackManager; }
+
     public PlayerManager getPlayerManager() {return playerManager; }
 }

@@ -65,12 +65,10 @@ public class Arena {
     }
 
     public void end() {
-        System.out.println("end() called");
-
         if (state != GameState.LIVE && state != GameState.COUNTDOWN) return;
 
         if (alivePlayers.size() == 1) {
-            Player winner = alivePlayers.get(0);
+            Player winner = alivePlayers.getLast();
             sendMessage(ChatColor.AQUA + "The game has ended! The winner was " + winner.getName());
             spleef.getPlayerManager().incrementWins(winner.getUniqueId());
         } else {
