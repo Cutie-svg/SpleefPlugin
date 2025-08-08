@@ -2,6 +2,7 @@ package org.examplef.spleef.instance;
 
 import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import com.infernalsuite.asp.api.loaders.SlimeLoader;
+import com.infernalsuite.asp.api.world.SlimeWorld;
 import com.infernalsuite.asp.api.world.SlimeWorldInstance;
 import com.infernalsuite.asp.api.world.properties.SlimeProperties;
 import com.infernalsuite.asp.api.world.properties.SlimePropertyMap;
@@ -18,48 +19,42 @@ import org.examplef.spleef.manager.ConfigManager;
 
 import java.io.File;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Arena {
 
     private final Spleef spleef;
-
     private final int id;
     private Location spawn;
-
     private final List<UUID> players;
-    private final List<Player>  alivePlayers;
+    private final List<Player> alivePlayers;
 
     private Game game;
     private GameState state;
     private CountDown countdown;
 
     private final AdvancedSlimePaperAPI api;
+    private SlimeWorld slimeWorld;
 
     public Arena(Spleef spleef, int id, Location spawn) {
         this.spleef = spleef;
         this.id = id;
         this.spawn = spawn;
 
-        players = new ArrayList<>();
-        alivePlayers = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.alivePlayers = new ArrayList<>();
+        this.state = GameState.RECRUITING;
 
-        state = GameState.RECRUITING;
-
-        api = AdvancedSlimePaperAPI.instance();
-
-        game = new Game(spleef, this);
+        this.api = AdvancedSlimePaperAPI.instance();
+        this.game = new Game(spleef, this);
     }
 
+    /* ARENA MANAGEMENT */
+
     public void start() {
-        if (state == GameState.LIVE) {
-            System.out.println("Arena " + id + " is already LIVE, cannot start again.");
-            return;
-        }
+        if (state == GameState.LIVE) return;
 
         alivePlayers.clear();
-
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null) alivePlayers.add(player);
@@ -67,35 +62,12 @@ public class Arena {
 
         setState(GameState.LIVE);
         game.start();
-
-    }
-
-    public void reset() {
-        if (countdown != null) countdown.cancel();
-
-        Location lobby = ConfigManager.getLobbySpawn();
-        for (UUID uuid : new ArrayList<>(players)) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null && player.isOnline()) {
-                player.teleport(lobby);
-            }
-        }
-
-        players.clear();
-        alivePlayers.clear();
-
-        sendTitle("", "");
-
-        System.out.println("Game ended");
-        setState(GameState.RECRUITING);
-        System.out.println("Game state is: " + this.getState());
-
-        resetArena();
     }
 
     public void end() {
-        Location lobby = ConfigManager.getLobbySpawn();
-        World world = lobby.getWorld();
+        System.out.println("end() called");
+
+        if (state != GameState.LIVE && state != GameState.COUNTDOWN) return;
 
         if (alivePlayers.size() == 1) {
             Player winner = alivePlayers.get(0);
@@ -105,25 +77,37 @@ public class Arena {
             sendMessage(ChatColor.GREEN + "NO winners this round.");
         }
 
-        for (UUID uuid : players) {
+        reset();
+    }
+
+    public void reset() {
+        if (countdown != null) countdown.cancel();
+
+        Location lobby = ConfigManager.getLobbySpawn();
+
+        for (UUID uuid : new ArrayList<>(players)) {
             Player player = Bukkit.getPlayer(uuid);
-            if (player != null) {
+            if (player != null && player.isOnline()) {
                 player.getInventory().clear();
                 player.teleport(lobby);
-
-                Bukkit.getLogger().info("Teleported players to lobby");
                 player.getInventory().setItem(0, SpleefUI.createCompass(player));
+                player.sendTitle("", "");
             }
         }
 
-        world.setDifficulty(Difficulty.PEACEFUL);
+        players.clear();
+        alivePlayers.clear();
+
+        sendTitle("", "");
 
         resetArena();
     }
 
     public void resetArena() {
         World arenaWorld = Bukkit.getWorld("spleef_arena");
-        if (arenaWorld != null) Bukkit.unloadWorld(arenaWorld, false);
+        if (arenaWorld != null) {
+            Bukkit.unloadWorld(arenaWorld, false);
+        }
 
         File file = new File(Bukkit.getWorldContainer(), "slime_worlds");
         SlimeLoader loader = new FileLoader(file);
@@ -136,9 +120,10 @@ public class Arena {
 
         CompletableFuture.supplyAsync(() -> {
             try {
-                return api.readWorld(loader, "spleef_arena", false, properties);
+                slimeWorld = api.readWorld(loader, "spleef_arena", false, properties); // ✅ ADDED
+                return slimeWorld;
             } catch (Exception e) {
-                e.printStackTrace();
+                Bukkit.getLogger().severe("Failed to read slime world: " + e.getMessage());
                 return null;
             }
         }).thenAcceptAsync(slimeWorld -> {
@@ -151,34 +136,17 @@ public class Arena {
 
                     spawn = new Location(newWorld, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
 
-                    for (UUID uuid : players) {
-                        Player player = Bukkit.getPlayer(uuid);
-                        if (player != null) player.teleport(spawn);
-                    }
-
-                    reset();
+                    Bukkit.getLogger().info("Arena " + id + " reset complete");
                     setState(GameState.RECRUITING);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Bukkit.getLogger().severe("Failed to load slime world instance: " + e.getMessage());
                 }
             });
         });
     }
 
-    public void sendMessage(String message) {
-        for (UUID uuid : players) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null) player.sendMessage(message);
-        }
-    }
-
-    public void sendTitle(String title, String subtitle) {
-        for (UUID uuid : players) {
-            Player player = Bukkit.getPlayer(uuid);
-            if (player != null) player.sendTitle(title, subtitle);
-        }
-    }
+    /* PLAYER MANAGEMENT */
 
     public void addPlayer(Player player) {
         UUID uuid = player.getUniqueId();
@@ -194,9 +162,7 @@ public class Arena {
 
         players.add(uuid);
         player.teleport(spawn);
-
         player.setGameMode(GameMode.SURVIVAL);
-
         player.getInventory().clear();
 
         ItemStack shovel = new ItemStack(Material.DIAMOND_SHOVEL);
@@ -207,7 +173,6 @@ public class Arena {
 
         if (state == GameState.RECRUITING && players.size() >= ConfigManager.getRequiredPlayers()) {
             setState(GameState.COUNTDOWN);
-
             if (countdown != null) countdown.cancel();
 
             countdown = new CountDown(spleef, this);
@@ -218,11 +183,11 @@ public class Arena {
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
         alivePlayers.remove(player);
-        player.teleport(ConfigManager.getLobbySpawn());
-        player.sendTitle("", "");
 
+        player.teleport(ConfigManager.getLobbySpawn());
         player.getInventory().clear();
         player.getInventory().setItem(0, SpleefUI.createCompass(player));
+        player.sendTitle("", "");
 
         if (state == GameState.COUNTDOWN && players.size() < ConfigManager.getRequiredPlayers()) {
             sendMessage(ChatColor.RED + "Not enough players to start");
@@ -231,8 +196,7 @@ public class Arena {
         }
 
         if (state == GameState.LIVE && players.size() < ConfigManager.getRequiredPlayers()) {
-            sendMessage(ChatColor.AQUA + "The game has ended as too many players have left the game.");
-            countdown.cancel();
+            sendMessage(ChatColor.AQUA + "The game has ended as too many players have left.");
             end();
         }
     }
@@ -240,27 +204,39 @@ public class Arena {
     public void eliminatePlayer(Player player) {
         alivePlayers.remove(player);
         players.remove(player.getUniqueId());
+
         player.sendMessage(ChatColor.RED + "You fell!");
         player.teleport(ConfigManager.getLobbySpawn());
-
         player.getInventory().clear();
         player.getInventory().setItem(0, SpleefUI.createCompass(player));
 
-        if (alivePlayers.size() == 1) {
+        if (alivePlayers.size() <= 1) {
             end();
         }
     }
 
-    public List<UUID> getPlayers() { return players; }
-    public int getId() { return id; }
+    /* TOOLS */
 
-    public void setState(GameState newState) {
-        System.out.println("Arena " + id + " state changed: " + this.state + " -> " + newState);
-        this.state = newState;
+    public void sendMessage(String message) {
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) player.sendMessage(message);
+        }
     }
 
+    public void sendTitle(String title, String subtitle) {
+        for (UUID uuid : players) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) player.sendTitle(title, subtitle);
+        }
+    }
+
+    public void setState(GameState newState) { this.state = newState; }
     public GameState getState() { return state; }
-    public World getWorld() { return spawn.getWorld(); }
+    public int getId() { return id; }
+    public List<UUID> getPlayers() { return players; }
     public List<Player> getAlivePlayers() { return alivePlayers; }
     public boolean isFull() { return players.size() >= 2; }
+
+    public World getWorld() { return spawn.getWorld(); }
 }

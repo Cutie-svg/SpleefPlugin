@@ -8,4 +8,3 @@ commands:
   terminate:
     permission: spleef.forcestop
     permission-message: §cYou cannot use this.
-softdepend: [ASPaperPlugin]

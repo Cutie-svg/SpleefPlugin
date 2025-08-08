@@ -18,12 +18,10 @@ public class Game implements Listener {
         this.spleef = spleef;
         this.arena = arena;
 
-        // Register listener only once
         Bukkit.getPluginManager().registerEvents(this, spleef);
     }
 
     public void start() {
-        // Do NOT set state here, Arena handles it
         arena.sendMessage(ChatColor.AQUA + "GAME HAS STARTED!");
     }
 
