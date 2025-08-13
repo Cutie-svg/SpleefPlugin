@@ -38,39 +38,27 @@ public class KnockBackManager {
     public void reloadConfig() {
         knockbackConfig = YamlConfiguration.loadConfiguration(configFile);
 
-        setDefaults();
         saveConfig();
     }
 
-    private void setDefaults() {
-        knockbackConfig.addDefault("enabled", true);
-        knockbackConfig.addDefault("base-strength", 1.5);
-        knockbackConfig.addDefault("horizontal-multiplier", 1.0);
-        knockbackConfig.addDefault("vertical-multiplier", 0.5);
-        knockbackConfig.addDefault("cooldown-ms", 500);
-        knockbackConfig.addDefault("require-permission", false);
-        knockbackConfig.addDefault("permission-node", "spleef.snowball.kb");
-
-        knockbackConfig.options().copyDefaults(true);
-    }
 
     public void saveConfig() {
         try {
             knockbackConfig.save(configFile);
         } catch (IOException e) {
-            spleef.getLogger().severe("Could not save knockback.yml: " + e.getMessage());
+            e.getStackTrace();
         }
     }
     public boolean isEnabled() {
         return knockbackConfig.getBoolean("enabled", true);
     }
     public double getBaseStrength() {
-        return knockbackConfig.getDouble("base-strength", 1.5);
+        return knockbackConfig.getDouble("base-strength");
     }
     public double getHorizontalMultiplier() {
-        return knockbackConfig.getDouble("horizontal-multiplier", 1.0);
+        return knockbackConfig.getDouble("horizontal-multiplier");
     }
     public double getVerticalMultiplier() {
-        return knockbackConfig.getDouble("vertical-multiplier", 0.5);
+        return knockbackConfig.getDouble("vertical-multiplier");
     }
 }

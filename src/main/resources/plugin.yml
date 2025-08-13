@@ -4,7 +4,23 @@ main: org.examplef.spleef.Spleef
 api-version: '1.21'
 commands:
   arena:
+    description: Arena command
   areload:
+    description: Reload Spleef config
   terminate:
+    description: Force stop a game
     permission: spleef.forcestop
     permission-message: §cYou cannot use this.
+  stats:
+    description: View player stats
+  spleefreset:
+    description: Reset players stats.
+    permission: spleef.reset
+    permission-message: §cYou cannot use this.
+  set:
+    description: Set players stats.
+    permission: spleef.set
+    permission-message: §cYou cannot use this.
+
+
+

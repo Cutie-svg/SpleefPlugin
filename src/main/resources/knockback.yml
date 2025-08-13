@@ -1,5 +1,5 @@
 enabled: true
-base-strength: 1.2
-horizontal-multiplier: 1.0
-vertical-multiplier: 0.6
+base-strength: 0.5
+horizontal-multiplier: 0.9
+vertical-multiplier: 0.25
 cooldown-ms: 500

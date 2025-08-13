@@ -2,10 +2,11 @@ package org.examplef.spleef;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.examplef.spleef.commands.admin.Terminate;
+import org.examplef.spleef.commands.admin.*;
 import org.examplef.spleef.commands.user.ArenaCommand;
-import org.examplef.spleef.commands.user.ReloadCommand;
+import org.examplef.spleef.gui.SetStatsGUI;
 import org.examplef.spleef.gui.SpleefUI;
+import org.examplef.spleef.gui.StatsUI;
 import org.examplef.spleef.listeners.ConnectListener;
 import org.examplef.spleef.listeners.GameListener;
 import org.examplef.spleef.listeners.KnockBack;
@@ -41,10 +42,16 @@ public final class Spleef extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ServerLoadListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SpleefUI(arenaManager), this);
         Bukkit.getPluginManager().registerEvents(new KnockBack(this), this);
+        Bukkit.getPluginManager().registerEvents(new StatsUI(this), this);
+        Bukkit.getPluginManager().registerEvents(new SetStatsGUI(this), this);
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
         getCommand("areload").setExecutor(new ReloadCommand(this));
         getCommand("terminate").setExecutor(new Terminate(this));
+        getCommand("stats").setExecutor(new StatsCommand(this));
+        getCommand("spleefreset").setExecutor(new ResetStats(this));
+        getCommand("set").setExecutor(new SetStatsCommand(this));
+
     }
 
     @Override

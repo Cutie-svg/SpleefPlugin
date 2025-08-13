@@ -1,5 +1,6 @@
 package org.examplef.spleef.manager;
 
+import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
@@ -17,7 +18,9 @@ public class ArenaManager {
     private List<Arena> arenas = new ArrayList<>();
     private Spleef spleef;
 
-    public ArenaManager(Spleef spleef) { this.spleef = spleef; }
+    public ArenaManager(Spleef spleef) {
+        this.spleef = spleef;
+    }
 
     public void loadArenas() {
 
@@ -38,6 +41,7 @@ public class ArenaManager {
                     (float) config.getDouble("arenas." + str + ".pitch"))));
         }
     }
+
 
     public void reload() {
         spleef.reloadConfig();
@@ -75,4 +79,5 @@ public class ArenaManager {
         }
         return null;
     }
+
 }

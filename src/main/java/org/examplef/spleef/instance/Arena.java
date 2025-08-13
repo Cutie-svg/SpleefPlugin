@@ -47,9 +47,8 @@ public class Arena {
 
         this.api = AdvancedSlimePaperAPI.instance();
         this.game = new Game(spleef, this);
-    }
 
-    /* ARENA MANAGEMENT */
+    }
 
     public void start() {
         if (state == GameState.LIVE) return;
@@ -67,12 +66,23 @@ public class Arena {
     public void end() {
         if (state != GameState.LIVE && state != GameState.COUNTDOWN) return;
 
+        for (UUID uuid : players) {
+            spleef.getPlayerManager().incrementGamesPlayed(uuid);
+        }
+
         if (alivePlayers.size() == 1) {
-            Player winner = alivePlayers.getLast();
-            sendMessage(ChatColor.AQUA + "The game has ended! The winner was " + winner.getName());
+            Player winner = alivePlayers.get(0);
             spleef.getPlayerManager().incrementWins(winner.getUniqueId());
+
+            for (UUID uuid : players) {
+                if (!uuid.equals(winner.getUniqueId())) {
+                    spleef.getPlayerManager().incrementLoses(uuid);
+                }
+            }
         } else {
-            sendMessage(ChatColor.GREEN + "NO winners this round.");
+            for (UUID uuid : players) {
+                spleef.getPlayerManager().incrementLoses(uuid);
+            }
         }
 
         reset();
@@ -118,10 +128,10 @@ public class Arena {
 
         CompletableFuture.supplyAsync(() -> {
             try {
-                slimeWorld = api.readWorld(loader, "spleef_arena", false, properties); // ✅ ADDED
+                slimeWorld = api.readWorld(loader, "spleef_arena", false, properties);
                 return slimeWorld;
             } catch (Exception e) {
-                Bukkit.getLogger().severe("Failed to read slime world: " + e.getMessage());
+                e.printStackTrace();
                 return null;
             }
         }).thenAcceptAsync(slimeWorld -> {
@@ -142,9 +152,8 @@ public class Arena {
                 }
             });
         });
-    }
 
-    /* PLAYER MANAGEMENT */
+    }
 
     public void addPlayer(Player player) {
         UUID uuid = player.getUniqueId();
@@ -203,6 +212,9 @@ public class Arena {
         alivePlayers.remove(player);
         players.remove(player.getUniqueId());
 
+        spleef.getPlayerManager().incrementLoses(player.getUniqueId());
+        spleef.getPlayerManager().incrementGamesPlayed(player.getUniqueId());
+
         player.sendMessage(ChatColor.RED + "You fell!");
         player.teleport(ConfigManager.getLobbySpawn());
         player.getInventory().clear();
@@ -212,8 +224,6 @@ public class Arena {
             end();
         }
     }
-
-    /* TOOLS */
 
     public void sendMessage(String message) {
         for (UUID uuid : players) {
