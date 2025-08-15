@@ -29,7 +29,7 @@ public class Arena {
     private final List<UUID> players;
     private final List<Player> alivePlayers;
 
-    private Game game;
+    private final Game game;
     private GameState state;
     private CountDown countdown;
 

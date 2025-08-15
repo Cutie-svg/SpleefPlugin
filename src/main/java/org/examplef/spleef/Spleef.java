@@ -7,10 +7,10 @@ import org.examplef.spleef.commands.user.ArenaCommand;
 import org.examplef.spleef.gui.SetStatsGUI;
 import org.examplef.spleef.gui.SpleefUI;
 import org.examplef.spleef.gui.StatsUI;
-import org.examplef.spleef.listeners.ConnectListener;
-import org.examplef.spleef.listeners.GameListener;
-import org.examplef.spleef.listeners.KnockBack;
-import org.examplef.spleef.listeners.ServerLoadListener;
+import org.examplef.spleef.events.ConnectListener;
+import org.examplef.spleef.events.GameListener;
+import org.examplef.spleef.events.KnockBack;
+import org.examplef.spleef.events.ServerLoadListener;
 import org.examplef.spleef.manager.ArenaManager;
 import org.examplef.spleef.manager.ConfigManager;
 import org.examplef.spleef.manager.KnockBackManager;
@@ -44,6 +44,7 @@ public final class Spleef extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new KnockBack(this), this);
         Bukkit.getPluginManager().registerEvents(new StatsUI(this), this);
         Bukkit.getPluginManager().registerEvents(new SetStatsGUI(this), this);
+
 
         getCommand("arena").setExecutor(new ArenaCommand(this));
         getCommand("areload").setExecutor(new ReloadCommand(this));

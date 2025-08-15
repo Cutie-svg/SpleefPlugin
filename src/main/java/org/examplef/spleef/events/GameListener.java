@@ -1,7 +1,6 @@
-package org.examplef.spleef.listeners;
+package org.examplef.spleef.events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -15,14 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
-import org.examplef.spleef.instance.CountDown;
 
 public class GameListener implements Listener {
 
     private final Spleef spleef;
-
-    private Arena arena;
-    private CountDown countDown;
 
     public GameListener(Spleef spleef) {
         this.spleef = spleef;
@@ -38,7 +33,6 @@ public class GameListener implements Listener {
 
         if (arena.getState() == GameState.COUNTDOWN || arena.getState() == GameState.RECRUITING) {
             e.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "Wait for the game to start!");
             return;
         }
 
@@ -49,7 +43,6 @@ public class GameListener implements Listener {
                 player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 4));
             } else {
                 e.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "You cannot break this block.");
             }
         }
     }

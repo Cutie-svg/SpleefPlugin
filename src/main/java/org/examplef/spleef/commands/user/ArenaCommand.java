@@ -47,7 +47,7 @@ public class ArenaCommand implements CommandExecutor {
         if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
             if (spleef.getArenaManager().getArena(player) != null) {
                 player.sendMessage(ChatColor.RED + "You are already in an arena!");
-                return true;  // Return true since handled
+                return true;
             }
 
             int id;
@@ -78,7 +78,6 @@ public class ArenaCommand implements CommandExecutor {
             return true;
         }
 
-        // Default fallback message
         player.sendMessage(ChatColor.RED + "Usage:");
         player.sendMessage(ChatColor.YELLOW + "/arena list - List all arenas");
         player.sendMessage(ChatColor.YELLOW + "/arena join <id> - Join an arena");

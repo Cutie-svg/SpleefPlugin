@@ -1,4 +1,4 @@
-package org.examplef.spleef.listeners;
+package org.examplef.spleef.events;
 
 import org.bukkit.event.EventHandler; 
 import org.bukkit.event.Listener;

@@ -1,5 +1,16 @@
 enabled: true
-base-strength: 0.5
-horizontal-multiplier: 0.9
-vertical-multiplier: 0.25
+
+base-strength: 1.2
+
+horizontal-multiplier: 0.6
+vertical-multiplier: 1.2
 cooldown-ms: 500
+
+# Advanced tuning
+max-jump-y: 0.42
+ground-vertical-kb: 0.39
+base-horizontal-kb: 0.98
+extra-horizontal-kb: 0.4
+airborne-horiz-dampen: 0.6
+airborne-vert-dampen: 0.7
+sprinting-kb-dampen: 0.6
