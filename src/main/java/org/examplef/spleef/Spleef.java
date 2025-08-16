@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.examplef.spleef.commands.admin.*;
 import org.examplef.spleef.commands.user.ArenaCommand;
+import org.examplef.spleef.commands.user.StatsCommand;
 import org.examplef.spleef.gui.SetStatsGUI;
 import org.examplef.spleef.gui.SpleefUI;
 import org.examplef.spleef.gui.StatsUI;

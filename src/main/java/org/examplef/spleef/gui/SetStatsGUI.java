@@ -26,7 +26,6 @@ public class SetStatsGUI implements Listener {
 
     public SetStatsGUI(Spleef spleef) {
         this.spleef = spleef;
-        Bukkit.getPluginManager().registerEvents(this, spleef);
     }
 
     public void open(Player admin, UUID targetUUID) {

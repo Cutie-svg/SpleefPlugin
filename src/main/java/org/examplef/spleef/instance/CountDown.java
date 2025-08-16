@@ -1,7 +1,6 @@
 package org.examplef.spleef.instance;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;

@@ -42,11 +42,9 @@ public class KnockBack implements Listener {
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent e) {
-        if (!(e.getHitEntity() instanceof Player)) return;
-        if (!(e.getEntity() instanceof Snowball)) return;
+        if (!(e.getHitEntity() instanceof Player victim)) return;
+        if (!(e.getEntity() instanceof Snowball snowball)) return;
 
-        Player victim = (Player) e.getHitEntity();
-        Snowball snowball = (Snowball) e.getEntity();
 
         // 1) Direction
         Vector dir = snowball.getVelocity().clone();
