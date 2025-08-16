@@ -12,7 +12,5 @@ public class ServerLoadListener implements Listener {
     public ServerLoadListener(Spleef spleef) { this.spleef = spleef; }
 
     @EventHandler
-    public void onServerLoad(ServerLoadEvent e) {
-        spleef.getArenaManager().reload();
-    }
+    public void onServerLoad(ServerLoadEvent e) { spleef.getArenaManager().reload(); }
 }

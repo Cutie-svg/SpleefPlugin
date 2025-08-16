@@ -87,20 +87,20 @@ public class SetStatsGUI implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
+    public void onChat(AsyncPlayerChatEvent e) {
+        Player player = e.getPlayer();
         UUID adminUUID = player.getUniqueId();
 
         if (!awaitingInput.containsKey(adminUUID)) return;
 
-        event.setCancelled(true);
+        e.setCancelled(true);
 
         String type = awaitingInput.remove(adminUUID);
         UUID targetUUID = targetMap.get(adminUUID);
         if (targetUUID == null) return;
 
         try {
-            int value = Integer.parseInt(event.getMessage());
+            int value = Integer.parseInt(e.getMessage());
             if (value < 0) {
                 player.sendMessage(ChatColor.RED + "Value must be a positive number.");
                 return;

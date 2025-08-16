@@ -148,7 +148,7 @@ public class Arena {
                     setState(GameState.RECRUITING);
 
                 } catch (Exception e) {
-                    Bukkit.getLogger().severe("Failed to load slime world instance: " + e.getMessage());
+                    Bukkit.getLogger().severe(e.getMessage());
                 }
             });
         });
