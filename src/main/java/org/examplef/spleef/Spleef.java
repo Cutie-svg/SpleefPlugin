@@ -53,6 +53,7 @@ public final class Spleef extends JavaPlugin {
         getCommand("stats").setExecutor(new StatsCommand(this));
         getCommand("spleefreset").setExecutor(new ResetStats(this));
         getCommand("set").setExecutor(new SetStatsCommand(this));
+        getCommand("spleef").setExecutor(new ManageArena(this));
 
     }
 

@@ -24,9 +24,9 @@ import java.util.concurrent.CompletableFuture;
 public class Arena {
 
     private final Spleef spleef;
-    private final int id;
+    private final String id; // <-- now a String
     private Location spawn;
-    private final List<UUID> players;
+    private final Set<UUID> players;
     private final List<Player> alivePlayers;
 
     private final Game game;
@@ -36,19 +36,20 @@ public class Arena {
     private final AdvancedSlimePaperAPI api;
     private SlimeWorld slimeWorld;
 
-    public Arena(Spleef spleef, int id, Location spawn) {
+    public Arena(Spleef spleef, String id, Location spawn) { // <-- accept String
         this.spleef = spleef;
         this.id = id;
         this.spawn = spawn;
 
-        this.players = new ArrayList<>();
+        this.players = new HashSet<>();
         this.alivePlayers = new ArrayList<>();
         this.state = GameState.RECRUITING;
 
         this.api = AdvancedSlimePaperAPI.instance();
         this.game = new Game(spleef, this);
-
     }
+
+    // --- existing methods (unchanged, except id logging uses String) ---
 
     public void start() {
         if (state == GameState.LIVE) return;
@@ -79,21 +80,18 @@ public class Arena {
                     spleef.getPlayerManager().incrementLoses(uuid);
                 }
             }
-        } else {
-            for (UUID uuid : players) {
-                spleef.getPlayerManager().incrementLoses(uuid);
-            }
         }
 
         reset();
     }
+
 
     public void reset() {
         if (countdown != null) countdown.cancel();
 
         Location lobby = ConfigManager.getLobbySpawn();
 
-        for (UUID uuid : new ArrayList<>(players)) {
+        for (UUID uuid : new HashSet<>(players)) {
             Player player = Bukkit.getPlayer(uuid);
             if (player != null && player.isOnline()) {
                 player.getInventory().clear();
@@ -112,7 +110,11 @@ public class Arena {
     }
 
     public void resetArena() {
-        World arenaWorld = Bukkit.getWorld("spleef_arena");
+        if (spawn == null || spawn.getWorld() == null) return;
+
+        String worldName = spawn.getWorld().getName();
+
+        World arenaWorld = Bukkit.getWorld(worldName);
         if (arenaWorld != null) {
             Bukkit.unloadWorld(arenaWorld, false);
         }
@@ -128,7 +130,7 @@ public class Arena {
 
         CompletableFuture.supplyAsync(() -> {
             try {
-                slimeWorld = api.readWorld(loader, "spleef_arena", false, properties);
+                slimeWorld = api.readWorld(loader, worldName, false, properties);
                 return slimeWorld;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,22 +154,21 @@ public class Arena {
                 }
             });
         });
-
     }
 
     public void addPlayer(Player player) {
         UUID uuid = player.getUniqueId();
-        if (players.contains(uuid)) {
+        if (!players.add(uuid)) {
             player.sendMessage(ChatColor.RED + "You are already in an arena!");
             return;
         }
 
         if (isFull()) {
             player.sendMessage(ChatColor.RED + "This arena is full.");
+            players.remove(uuid);
             return;
         }
 
-        players.add(uuid);
         player.teleport(spawn);
         player.setGameMode(GameMode.SURVIVAL);
         player.getInventory().clear();
@@ -225,6 +226,8 @@ public class Arena {
         }
     }
 
+    // --- Utilities ---
+
     public void sendMessage(String message) {
         for (UUID uuid : players) {
             Player player = Bukkit.getPlayer(uuid);
@@ -239,12 +242,13 @@ public class Arena {
         }
     }
 
+    // --- Getters/Setters ---
+
     public void setState(GameState newState) { this.state = newState; }
     public GameState getState() { return state; }
-    public int getId() { return id; }
-    public List<UUID> getPlayers() { return players; }
+    public String getId() { return id; } // <-- String now
+    public Set<UUID> getPlayers() { return players; }
     public List<Player> getAlivePlayers() { return alivePlayers; }
     public boolean isFull() { return players.size() >= 2; }
-
     public World getWorld() { return spawn.getWorld(); }
 }

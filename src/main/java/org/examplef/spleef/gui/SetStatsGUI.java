@@ -52,7 +52,11 @@ public class SetStatsGUI implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player player)) return;
-        if (!e.getView().getTitle().equals(ChatColor.DARK_GREEN + "Set Player Stats")) return;
+
+        if (!ChatColor.stripColor(e.getView().getTitle()).equalsIgnoreCase("Set Player Stats")) return;
+
+        int slot = e.getRawSlot();
+        if (slot < 0 || slot >= e.getInventory().getSize()) return;
 
         e.setCancelled(true);
 
@@ -61,7 +65,7 @@ public class SetStatsGUI implements Listener {
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetUUID);
 
-        switch (e.getSlot()) {
+        switch (slot) {
             case 2 -> {
                 player.closeInventory();
                 player.sendMessage(ChatColor.GREEN + "Enter new wins count for " + target.getName() + ":");
@@ -86,6 +90,7 @@ public class SetStatsGUI implements Listener {
         }
     }
 
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
@@ -95,7 +100,7 @@ public class SetStatsGUI implements Listener {
 
         e.setCancelled(true);
 
-        String type = awaitingInput.remove(adminUUID);
+        String type = awaitingInput.get(adminUUID); // keep until valid
         UUID targetUUID = targetMap.get(adminUUID);
         if (targetUUID == null) return;
 
@@ -106,18 +111,17 @@ public class SetStatsGUI implements Listener {
                 return;
             }
 
-            if (type.equals("wins")) {
-                spleef.getPlayerManager().setWins(targetUUID, value);
-                player.sendMessage(ChatColor.GREEN + "Set wins to " + value + ".");
-            } else if (type.equals("loses")) {
-                spleef.getPlayerManager().setLoses(targetUUID, value);
-                player.sendMessage(ChatColor.RED + "Set loses to " + value + ".");
-            } else if (type.equals("gamesPlayed")) {
-                spleef.getPlayerManager().setGamesPlayed(targetUUID, value);
-                player.sendMessage(ChatColor.GOLD + "Set games played to " + value + ".");
+            switch (type) {
+                case "wins" -> spleef.getPlayerManager().setWins(targetUUID, value);
+                case "loses" -> spleef.getPlayerManager().setLoses(targetUUID, value);
+                case "gamesPlayed" -> spleef.getPlayerManager().setGamesPlayed(targetUUID, value);
             }
+
+            player.sendMessage(ChatColor.GREEN + "Set " + type + " to " + value + ".");
+            awaitingInput.remove(adminUUID); // remove only after successful input
         } catch (NumberFormatException ex) {
-            player.sendMessage(ChatColor.RED + "Invalid number.");
+            player.sendMessage(ChatColor.RED + "Invalid number. Try again.");
         }
+
     }
 }

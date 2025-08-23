@@ -1,6 +1,5 @@
 package org.examplef.spleef.manager;
 
-import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
@@ -16,40 +15,40 @@ import java.util.List;
 public class ArenaManager {
 
     private List<Arena> arenas = new ArrayList<>();
-    private Spleef spleef;
+    private final Spleef spleef;
 
     public ArenaManager(Spleef spleef) {
         this.spleef = spleef;
     }
 
     public void loadArenas() {
-
         arenas.clear();
 
         FileConfiguration config = spleef.getConfig();
 
-        for (String str : config.getConfigurationSection("arenas").getKeys(false)) {
+        if (config.getConfigurationSection("arenas") == null) return;
 
-
-            arenas.add(new Arena(spleef, Integer.parseInt(str), new Location(
-
-                    Bukkit.getWorld(config.getString("arenas." + str + ".world")),
-                    config.getDouble("arenas." + str + ".x"),
-                    config.getDouble("arenas." + str + ".y"),
-                    config.getDouble("arenas." + str + ".z"),
-                    (float) config.getDouble("arenas." + str + ".yaw"),
-                    (float) config.getDouble("arenas." + str + ".pitch"))));
+        for (String key : config.getConfigurationSection("arenas").getKeys(false)) {
+            arenas.add(new Arena(
+                    spleef,
+                    key, // now using String
+                    new Location(
+                            Bukkit.getWorld(config.getString("arenas." + key + ".world")),
+                            config.getDouble("arenas." + key + ".x"),
+                            config.getDouble("arenas." + key + ".y"),
+                            config.getDouble("arenas." + key + ".z"),
+                            (float) config.getDouble("arenas." + key + ".yaw"),
+                            (float) config.getDouble("arenas." + key + ".pitch"))
+            ));
         }
     }
-
 
     public void reload() {
         spleef.reloadConfig();
         loadArenas();
 
-        for (Arena arena : spleef.getArenaManager().getArenas()) {
+        for (Arena arena : arenas) {
             World world = arena.getWorld();
-
             if (world != null) {
                 world.setDifficulty(Difficulty.PEACEFUL);
                 world.setSpawnFlags(false, false);
@@ -71,13 +70,13 @@ public class ArenaManager {
         }
         return null;
     }
-    public Arena getArena(int id) {
+
+    public Arena getArena(String id) {
         for (Arena arena : arenas) {
-            if (arena.getId() == id) {
+            if (arena.getId().equalsIgnoreCase(id)) {
                 return arena;
             }
         }
         return null;
     }
-
 }

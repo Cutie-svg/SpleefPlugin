@@ -26,5 +26,4 @@ public class ConfigManager {
                 (float) config.getDouble("lobby-spawn.yaw"),
                 (float) config.getDouble("lobby-spawn.pitch"));
     }
-
 }

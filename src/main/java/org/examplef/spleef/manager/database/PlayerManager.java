@@ -3,7 +3,6 @@ package org.examplef.spleef.manager.database;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -21,87 +20,76 @@ public class PlayerManager {
         this.collection = mongoManager.getPlayersCollection();
     }
 
+    // ---------- Increment Methods ----------
+
     public void incrementWins(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.inc("wins", 1),
-                            Updates.set("username", player.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
-    }
-
-    public int getWins(UUID playerUUID) {
-        Document doc = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-        if (doc == null) return 0;
-        return doc.getInteger("wins", 0);
-    }
-    public int getGamesPlayed(UUID playerUUID) {
-        Document doc = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-        if (doc == null) return 0;
-        return doc.getInteger("gamesPlayed", 0);
-    }
-    public void incrementGamesPlayed(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.inc("gamesPlayed", 1),
-                            Updates.set("username", player.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
-    }
-    public int getLoses(UUID playerUUID) {
-        Document doc = collection.find(Filters.eq("uuid", playerUUID.toString())).first();
-        if (doc == null) return 0;
-        return doc.getInteger("loses", 0);
+        asyncIncrement(uuid, "wins");
     }
 
     public void incrementLoses(UUID uuid) {
-        Player loser = Bukkit.getPlayer(uuid);
-        if (loser == null) return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.inc("loses", 1),
-                            Updates.set("username", loser.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
+        asyncIncrement(uuid, "loses");
     }
-    public void resetStats(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        String username = player != null ? player.getName() : null;
 
+    public void incrementGamesPlayed(UUID uuid) {
+        asyncIncrement(uuid, "gamesPlayed");
+    }
+
+    private void asyncIncrement(UUID uuid, String field) {
         Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            Document updateFields = new Document("wins", 0)
-                    .append("loses", 0)
-                    .append("gamesPlayed", 0);
+            Player player = Bukkit.getPlayer(uuid);
+            String username = player != null ? player.getName() : null;
+
+            Document updateDoc = new Document("$inc", new Document(field, 1));
             if (username != null) {
-                updateFields.append("username", username);
+                updateDoc.append("$set", new Document("username", username));
             }
 
             collection.updateOne(
                     Filters.eq("uuid", uuid.toString()),
-                    new Document("$set", updateFields),
+                    updateDoc,
                     new UpdateOptions().upsert(true)
             );
         });
     }
+
+    // ---------- Set Methods ----------
+
+    public void setWins(UUID uuid, int value) {
+        asyncSet(uuid, "wins", value);
+    }
+
+    public void setLoses(UUID uuid, int value) {
+        asyncSet(uuid, "loses", value);
+    }
+
+    public void setGamesPlayed(UUID uuid, int value) {
+        asyncSet(uuid, "gamesPlayed", value);
+    }
+
+    private void asyncSet(UUID uuid, String field, int value) {
+        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
+            Player player = Bukkit.getPlayer(uuid);
+            String username = player != null ? player.getName() : null;
+
+            Document updateDoc = new Document(field, value);
+            if (username != null) updateDoc.append("username", username);
+
+            collection.updateOne(
+                    Filters.eq("uuid", uuid.toString()),
+                    new Document("$set", updateDoc),
+                    new UpdateOptions().upsert(true)
+            );
+        });
+    }
+
+    // ---------- Reset Methods ----------
+
+    public void resetStats(UUID uuid) {
+        asyncSet(uuid, "wins", 0);
+        asyncSet(uuid, "loses", 0);
+        asyncSet(uuid, "gamesPlayed", 0);
+    }
+
     public void resetAllStats() {
         Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
             Document resetFields = new Document("wins", 0)
@@ -114,52 +102,24 @@ public class PlayerManager {
             );
         });
     }
-    public void setWins(UUID uuid, int wins) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
 
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.set("wins", wins),
-                            Updates.set("username", player.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
+    // ---------- Get Methods ----------
+
+    public int getWins(UUID uuid) {
+        return getField(uuid, "wins");
     }
 
-    public void setLoses(UUID uuid, int loses) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.set("loses", loses),
-                            Updates.set("username", player.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
+    public int getLoses(UUID uuid) {
+        return getField(uuid, "loses");
     }
 
-    public void setGamesPlayed(UUID uuid, int number) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (player == null) return;
-
-        Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
-            collection.updateOne(
-                    Filters.eq("uuid", uuid.toString()),
-                    Updates.combine(
-                            Updates.set("gamesPlayed", number),
-                            Updates.set("username", player.getName())
-                    ),
-                    new UpdateOptions().upsert(true)
-            );
-        });
+    public int getGamesPlayed(UUID uuid) {
+        return getField(uuid, "gamesPlayed");
     }
 
+    private int getField(UUID uuid, String field) {
+        Document doc = collection.find(Filters.eq("uuid", uuid.toString())).first();
+        if (doc == null) return 0;
+        return doc.getInteger(field, 0);
+    }
 }

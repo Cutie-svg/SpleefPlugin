@@ -25,6 +25,7 @@ public class ArenaCommand implements CommandExecutor {
             return true;
         }
 
+        // /arena list
         if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
             player.sendMessage(ChatColor.AQUA + "Available arenas:");
             for (Arena arena : spleef.getArenaManager().getArenas()) {
@@ -33,6 +34,7 @@ public class ArenaCommand implements CommandExecutor {
             return true;
         }
 
+        // /arena leave
         if (args.length == 1 && args[0].equalsIgnoreCase("leave")) {
             Arena arena = spleef.getArenaManager().getArena(player);
             if (arena != null) {
@@ -44,43 +46,34 @@ public class ArenaCommand implements CommandExecutor {
             return true;
         }
 
+        // /arena join <id or name>
         if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
             if (spleef.getArenaManager().getArena(player) != null) {
                 player.sendMessage(ChatColor.RED + "You are already in an arena!");
                 return true;
             }
 
-            int id;
-            try {
-                id = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Invalid arena ID. Please enter a valid number.");
-                return true;
-            }
+            String arenaId = args[1];
+            Arena arena = spleef.getArenaManager().getArena(arenaId);
 
-            if (id < 0 || id >= spleef.getArenaManager().getArenas().size()) {
-                player.sendMessage(ChatColor.RED + "Arena with ID " + id + " does not exist.");
-                return true;
-            }
-
-            Arena arena = spleef.getArenaManager().getArena(id);
             if (arena == null) {
-                player.sendMessage(ChatColor.RED + "Arena not found.");
+                player.sendMessage(ChatColor.RED + "Arena '" + arenaId + "' does not exist.");
                 return true;
             }
 
             if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
                 arena.addPlayer(player);
-                player.sendMessage(ChatColor.GREEN + "You joined arena " + id + ".");
+                player.sendMessage(ChatColor.GREEN + "You joined arena " + arena.getId() + ".");
             } else {
                 player.sendMessage(ChatColor.RED + "Cannot join arena right now.");
             }
             return true;
         }
 
+        // Default usage help
         player.sendMessage(ChatColor.RED + "Usage:");
         player.sendMessage(ChatColor.YELLOW + "/arena list - List all arenas");
-        player.sendMessage(ChatColor.YELLOW + "/arena join <id> - Join an arena");
+        player.sendMessage(ChatColor.YELLOW + "/arena join <id|name> - Join an arena");
         player.sendMessage(ChatColor.YELLOW + "/arena leave - Leave current arena");
         return true;
     }
