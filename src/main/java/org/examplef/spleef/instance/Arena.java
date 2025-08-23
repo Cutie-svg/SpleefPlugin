@@ -49,8 +49,6 @@ public class Arena {
         this.game = new Game(spleef, this);
     }
 
-    // --- existing methods (unchanged, except id logging uses String) ---
-
     public void start() {
         if (state == GameState.LIVE) return;
 
