@@ -36,7 +36,7 @@ public class Arena {
     private final AdvancedSlimePaperAPI api;
     private SlimeWorld slimeWorld;
 
-    public Arena(Spleef spleef, String id, Location spawn) { // <-- accept String
+    public Arena(Spleef spleef, String id, Location spawn) {
         this.spleef = spleef;
         this.id = id;
         this.spawn = spawn;
