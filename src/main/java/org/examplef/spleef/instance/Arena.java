@@ -244,7 +244,7 @@ public class Arena {
 
     public void setState(GameState newState) { this.state = newState; }
     public GameState getState() { return state; }
-    public String getId() { return id; } // <-- String now
+    public String getId() { return id; } //
     public Set<UUID> getPlayers() { return players; }
     public List<Player> getAlivePlayers() { return alivePlayers; }
     public boolean isFull() { return players.size() >= 2; }

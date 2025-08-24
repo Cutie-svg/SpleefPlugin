@@ -52,7 +52,7 @@ public class PlayerManager {
         });
     }
 
-    // ---------- Set Methods ----------
+    // ---------- Setter Methods ----------
 
     public void setWins(UUID uuid, int value) {
         asyncSet(uuid, "wins", value);
@@ -103,7 +103,7 @@ public class PlayerManager {
         });
     }
 
-    // ---------- Get Methods ----------
+    // ---------- Getter Methods ----------
 
     public int getWins(UUID uuid) {
         return getField(uuid, "wins");
