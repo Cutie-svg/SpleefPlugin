@@ -126,6 +126,7 @@ public class Arena {
         properties.setValue(SlimeProperties.ALLOW_MONSTERS, false);
         properties.setValue(SlimeProperties.ALLOW_ANIMALS, false);
 
+
         CompletableFuture.supplyAsync(() -> {
             try {
                 slimeWorld = api.readWorld(loader, worldName, false, properties);
