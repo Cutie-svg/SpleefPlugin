@@ -100,7 +100,7 @@ public class SetStatsGUI implements Listener {
 
         e.setCancelled(true);
 
-        String type = awaitingInput.get(adminUUID); // keep until valid
+        String type = awaitingInput.get(adminUUID);
         UUID targetUUID = targetMap.get(adminUUID);
         if (targetUUID == null) return;
 
@@ -118,7 +118,7 @@ public class SetStatsGUI implements Listener {
             }
 
             player.sendMessage(ChatColor.GREEN + "Set " + type + " to " + value + ".");
-            awaitingInput.remove(adminUUID); // remove only after successful input
+            awaitingInput.remove(adminUUID);
         } catch (NumberFormatException ex) {
             player.sendMessage(ChatColor.RED + "Invalid number. Try again.");
         }
