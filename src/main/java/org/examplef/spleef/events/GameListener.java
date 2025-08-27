@@ -40,12 +40,17 @@ public class GameListener implements Listener {
             Material block = e.getBlock().getType();
 
             if (block == Material.SNOW_BLOCK) {
-                player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 4));
+                Bukkit.getScheduler().runTaskLater(spleef, () -> {
+                    if (player.isOnline()) {
+                        player.getInventory().addItem(new ItemStack(Material.SNOWBALL, 4));
+                    }
+                }, 3L);
             } else {
                 e.setCancelled(true);
             }
         }
     }
+
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent e) {
         Projectile projectile = e.getEntity();

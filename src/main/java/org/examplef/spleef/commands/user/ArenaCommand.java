@@ -73,7 +73,7 @@ public class ArenaCommand implements CommandExecutor {
         // Default usage help
         player.sendMessage(ChatColor.RED + "Usage:");
         player.sendMessage(ChatColor.YELLOW + "/arena list - List all arenas");
-        player.sendMessage(ChatColor.YELLOW + "/arena join <id|name> - Join an arena");
+        player.sendMessage(ChatColor.YELLOW + "/arena join <map name> - Join an arena");
         player.sendMessage(ChatColor.YELLOW + "/arena leave - Leave current arena");
         return true;
     }
