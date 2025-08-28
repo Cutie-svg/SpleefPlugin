@@ -1,5 +1,6 @@
 package org.examplef.spleef;
 
+import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.examplef.spleef.commands.admin.*;
@@ -25,6 +26,8 @@ public final class Spleef extends JavaPlugin {
 
     private MongoManager mongoManager;
     private PlayerManager playerManager;
+
+    private final AdvancedSlimePaperAPI api = AdvancedSlimePaperAPI.instance();
 
     @Override
     public void onEnable() {
@@ -66,4 +69,6 @@ public final class Spleef extends JavaPlugin {
     public KnockBackManager getKnockBackManager() { return knockBackManager; }
 
     public PlayerManager getPlayerManager() {return playerManager; }
+
+    public AdvancedSlimePaperAPI getApi() { return api; }
 }

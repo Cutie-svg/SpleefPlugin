@@ -1,5 +1,7 @@
 package org.examplef.spleef.commands.admin;
 
+import com.infernalsuite.asp.api.AdvancedSlimePaperAPI;
+import com.infernalsuite.asp.api.world.SlimeWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,17 +13,20 @@ import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
 public class ManageArena implements CommandExecutor {
 
     private final Spleef spleef;
+    private final AdvancedSlimePaperAPI asp;
 
     public ManageArena(Spleef spleef) {
         this.spleef = spleef;
+        this.asp = spleef.getApi();
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-
         if (!(sender instanceof Player player)) {
             sender.sendMessage(ChatColor.RED + "Only players can run this command.");
             return true;
@@ -29,8 +34,8 @@ public class ManageArena implements CommandExecutor {
 
         if (args.length != 2) {
             player.sendMessage(ChatColor.GREEN + "Usage:");
-            player.sendMessage(ChatColor.YELLOW + "/spleef register <arenaName> - Register a new arena");
-            player.sendMessage(ChatColor.YELLOW + "/spleef delete <arenaName> - Delete an existing arena");
+            player.sendMessage(ChatColor.YELLOW + "/spleef register <arenaName>");
+            player.sendMessage(ChatColor.YELLOW + "/spleef delete <arenaName>");
             return true;
         }
 
@@ -40,7 +45,7 @@ public class ManageArena implements CommandExecutor {
         switch (subCommand) {
             case "register" -> {
                 if (spleef.getArenaManager().getArena(arenaName) != null) {
-                    player.sendMessage(ChatColor.RED + "The arena '" + arenaName + "' already exists!");
+                    player.sendMessage(ChatColor.RED + "Arena '" + arenaName + "' already exists!");
                     return true;
                 }
 
@@ -56,9 +61,19 @@ public class ManageArena implements CommandExecutor {
                 spleef.getArenaManager().getArenas().add(arena);
                 spleef.saveConfig();
 
-                player.sendMessage(ChatColor.GREEN + "Arena '" + arenaName + "' has been registered successfully!");
-            }
+                SlimeWorld slimeWorld = asp.getLoadedWorld(arenaName);
 
+                player.sendMessage(ChatColor.GREEN + "Arena '" + arenaName + "' registered!");
+
+                Bukkit.getScheduler().runTaskAsynchronously(spleef, () -> {
+                    try {
+                        asp.saveWorld(slimeWorld);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            }
             case "delete" -> {
                 Arena arena = spleef.getArenaManager().getArena(arenaName);
                 if (arena == null) {
@@ -66,21 +81,13 @@ public class ManageArena implements CommandExecutor {
                     return true;
                 }
 
-                // Kick all players in the arena
-                for (Player p : arena.getAlivePlayers()) {
-                    p.teleport(spleef.getConfig().getLocation("lobby", new Location(Bukkit.getWorlds().get(0), 0, 64, 0)));
-                    p.getInventory().clear();
-                    p.sendMessage(ChatColor.RED + "Arena '" + arenaName + "' has been deleted. You have been moved to the lobby.");
-                }
-
                 spleef.getConfig().set("arenas." + arenaName, null);
                 spleef.getArenaManager().getArenas().remove(arena);
                 spleef.saveConfig();
 
-
-                player.sendMessage(ChatColor.GREEN + "Arena '" + arenaName + "' has been deleted successfully!");
+                player.sendMessage(ChatColor.GREEN + "Arena '" + arenaName + "' deleted!");
+                Bukkit.unloadWorld(arenaName, false);
             }
-
             default -> player.sendMessage(ChatColor.RED + "Unknown subcommand. Use register or delete.");
         }
 

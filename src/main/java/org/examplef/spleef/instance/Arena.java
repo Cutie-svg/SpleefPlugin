@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class Arena {
 
     private final Spleef spleef;
-    private final String id; // <-- now a String
+    private final String id;
     private Location spawn;
     private final Set<UUID> players;
     private final List<Player> alivePlayers;
@@ -34,6 +34,7 @@ public class Arena {
     private CountDown countdown;
 
     private final AdvancedSlimePaperAPI api;
+
     private SlimeWorld slimeWorld;
 
     public Arena(Spleef spleef, String id, Location spawn) {
@@ -45,8 +46,9 @@ public class Arena {
         this.alivePlayers = new ArrayList<>();
         this.state = GameState.RECRUITING;
 
-        this.api = AdvancedSlimePaperAPI.instance();
         this.game = new Game(spleef, this);
+
+        api = spleef.getApi();
     }
 
     public void start() {
