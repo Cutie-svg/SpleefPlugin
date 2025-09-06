@@ -5,6 +5,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
@@ -31,7 +32,7 @@ public class ArenaManager {
         for (String key : config.getConfigurationSection("arenas").getKeys(false)) {
             arenas.add(new Arena(
                     spleef,
-                    key, // now using String
+                    key,
                     new Location(
                             Bukkit.getWorld(config.getString("arenas." + key + ".world")),
                             config.getDouble("arenas." + key + ".x"),
@@ -44,16 +45,15 @@ public class ArenaManager {
     }
 
     public void reload() {
-        spleef.reloadConfig();
+        ConfigManager.setConfig(spleef);
         loadArenas();
 
         for (Arena arena : arenas) {
-            World world = arena.getWorld();
-            if (world != null) {
-                world.setDifficulty(Difficulty.PEACEFUL);
-                world.setSpawnFlags(false, false);
-                world.setStorm(false);
-                world.setThundering(false);
+            if (arena.getWorld() != null) {
+                arena.getWorld().setDifficulty(Difficulty.PEACEFUL);
+                arena.getWorld().setSpawnFlags(false, false);
+                arena.getWorld().setStorm(false);
+                arena.getWorld().setThundering(false);
             }
         }
     }
@@ -71,9 +71,9 @@ public class ArenaManager {
         return null;
     }
 
-    public Arena getArena(String id) {
+    public Arena getArena(String map) {
         for (Arena arena : arenas) {
-            if (arena.getId().equalsIgnoreCase(id)) {
+            if (arena.getMap().equalsIgnoreCase(map)) {
                 return arena;
             }
         }

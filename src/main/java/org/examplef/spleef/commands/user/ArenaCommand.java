@@ -29,7 +29,7 @@ public class ArenaCommand implements CommandExecutor {
         if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
             player.sendMessage(ChatColor.AQUA + "Available arenas:");
             for (Arena arena : spleef.getArenaManager().getArenas()) {
-                player.sendMessage(ChatColor.GREEN + "- " + arena.getId() + " (State: " + arena.getState().name() + ")");
+                player.sendMessage(ChatColor.GREEN + "- " + arena.getMap() + " (State: " + arena.getState().name() + ")");
             }
             return true;
         }
@@ -63,7 +63,7 @@ public class ArenaCommand implements CommandExecutor {
 
             if (arena.getState() == GameState.RECRUITING || arena.getState() == GameState.COUNTDOWN) {
                 arena.addPlayer(player);
-                player.sendMessage(ChatColor.GREEN + "You joined arena " + arena.getId() + ".");
+                player.sendMessage(ChatColor.GREEN + "You joined arena " + arena.getMap() + ".");
             } else {
                 player.sendMessage(ChatColor.RED + "Cannot join arena right now.");
             }

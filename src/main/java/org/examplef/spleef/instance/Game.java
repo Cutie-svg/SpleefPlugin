@@ -30,7 +30,7 @@ public class Game implements Listener {
         Player player = e.getPlayer();
 
         if (arena.getState() == GameState.LIVE && arena.getAlivePlayers().contains(player)) {
-            if (player.getLocation().getY() < spleef.getConfig().getDouble("arenas." + arena.getId() + ".y")) {
+            if (player.getLocation().getY() < spleef.getConfig().getDouble("arenas." + arena.getMap() + ".y")) {
                 arena.eliminatePlayer(player);
             }
         }

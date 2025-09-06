@@ -13,7 +13,7 @@ public class MongoManager {
     private final MongoCollection<Document> players;
 
     public MongoManager() {
-        client = MongoClients.create();
+        client = MongoClients.create("mongodb+srv://AnikMongo:f5vrils8aPT1KysW@cluster0.pfnk8zw.mongodb.net/");
         database = client.getDatabase("player-stats");
         players = database.getCollection("stats");
     }

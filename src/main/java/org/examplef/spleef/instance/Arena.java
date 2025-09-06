@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class Arena {
 
     private final Spleef spleef;
-    private final String id;
+    private final String map;
     private Location spawn;
     private final Set<UUID> players;
     private final List<Player> alivePlayers;
@@ -37,9 +37,9 @@ public class Arena {
 
     private SlimeWorld slimeWorld;
 
-    public Arena(Spleef spleef, String id, Location spawn) {
+    public Arena(Spleef spleef, String map, Location spawn) {
         this.spleef = spleef;
-        this.id = id;
+        this.map = map;
         this.spawn = spawn;
 
         this.players = new HashSet<>();
@@ -147,7 +147,7 @@ public class Arena {
 
                     spawn = new Location(newWorld, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch());
 
-                    Bukkit.getLogger().info("Arena " + id + " reset complete");
+                    Bukkit.getLogger().info("Arena " + map + " reset complete");
                     setState(GameState.RECRUITING);
 
                 } catch (Exception e) {
@@ -247,7 +247,7 @@ public class Arena {
 
     public void setState(GameState newState) { this.state = newState; }
     public GameState getState() { return state; }
-    public String getId() { return id; } //
+    public String getMap() { return map; } //
     public Set<UUID> getPlayers() { return players; }
     public List<Player> getAlivePlayers() { return alivePlayers; }
     public boolean isFull() { return players.size() >= 2; }
