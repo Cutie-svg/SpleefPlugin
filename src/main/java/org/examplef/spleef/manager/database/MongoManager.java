@@ -24,7 +24,14 @@ public class MongoManager {
 
     public MongoManager(Spleef spleef) {
         this.spleef = spleef;
-        this.mongoConfig = YamlConfiguration.loadConfiguration(new File(spleef.getDataFolder(), "mongo.yml"));
+
+        File mongoFile = new File(spleef.getDataFolder(), "mongo.yml");
+        if (!mongoFile.exists()) {
+            spleef.saveResource("mongo.yml", false);
+            spleef.getLogger().info("mongo.yml was missing, copied default from JAR.");
+        }
+
+        this.mongoConfig = YamlConfiguration.loadConfiguration(mongoFile);
         connect();
     }
 
@@ -49,7 +56,9 @@ public class MongoManager {
         }
     }
 
-    public MongoCollection<Document> getPlayersCollection() { return players; }
+    public MongoCollection<Document> getPlayersCollection() {
+        return players;
+    }
 
     public void disconnect() {
         if (client != null) {
