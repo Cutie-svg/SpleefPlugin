@@ -37,7 +37,7 @@ public final class Spleef extends JavaPlugin {
         arenaManager = new ArenaManager(this);
         knockBackManager = new KnockBackManager(this);
 
-        mongoManager = new MongoManager();
+        mongoManager = new MongoManager(this);
         playerManager = new PlayerManager(this, mongoManager);
 
         arenaManager.loadArenas();
