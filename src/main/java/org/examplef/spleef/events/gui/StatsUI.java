@@ -1,4 +1,4 @@
-package org.examplef.spleef.gui;
+package org.examplef.spleef.events.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

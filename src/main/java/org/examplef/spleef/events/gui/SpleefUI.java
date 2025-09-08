@@ -1,4 +1,4 @@
-package org.examplef.spleef.gui;
+package org.examplef.spleef.events.gui;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,7 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.examplef.spleef.Spleef;
 import org.examplef.spleef.instance.Arena;
 import org.examplef.spleef.manager.ArenaManager;
 

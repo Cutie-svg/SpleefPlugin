@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
@@ -21,7 +22,6 @@ public class GameListener implements Listener {
 
     public GameListener(Spleef spleef) {
         this.spleef = spleef;
-
     }
 
     @EventHandler
@@ -64,6 +64,21 @@ public class GameListener implements Listener {
             Bukkit.getScheduler().runTaskLater(spleef, () -> {
                 hitBlock.breakNaturally();
             }, 1L);
+        }
+    }
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+        Arena arena = spleef.getArenaManager().getArena(player);
+
+        if (arena == null) return;
+
+        if (arena.getState() == GameState.LIVE && arena.getAlivePlayers().contains(player)) {
+            double yLimit = spleef.getConfig().getDouble("arenas." + arena.getMap() + ".y");
+            if (player.getLocation().getY() < yLimit) {
+                arena.eliminatePlayer(player);
+            }
         }
     }
 }

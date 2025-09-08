@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.examplef.spleef.GameState;
 import org.examplef.spleef.Spleef;
-import org.examplef.spleef.gui.SpleefUI;
+import org.examplef.spleef.events.gui.SpleefUI;
 import org.examplef.spleef.manager.ConfigManager;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public class Arena {
         this.alivePlayers = new ArrayList<>();
         this.state = GameState.RECRUITING;
 
-        this.game = new Game(spleef, this);
+        this.game = new Game(this);
 
         api = spleef.getApi();
     }

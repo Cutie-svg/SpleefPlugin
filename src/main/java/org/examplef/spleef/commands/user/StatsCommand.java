@@ -6,7 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.examplef.spleef.Spleef;
-import org.examplef.spleef.gui.StatsUI;
+import org.examplef.spleef.events.gui.StatsUI;
 import org.jetbrains.annotations.NotNull;
 
 public class StatsCommand implements CommandExecutor {
